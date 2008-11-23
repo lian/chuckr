@@ -1,45 +1,45 @@
+require 'open3'
 module Chuckr
   CHUCK_BIN = File.dirname(__FILE__) + "/../bin/chuckr_bin"
   class VM
+    attr_accessor :io
     def initialize(args)
       @config = args
     end
     
     def start
       raise "CHUCK_BIN is missing!" unless File.exists?(CHUCK_BIN) && File.executable?(CHUCK_BIN)
-      @chuck_io = IO.popen "#{chuck_cmd('--loop')} 2>&1", 'r+'
-      @chuck_io_queue = Queue.new
-      @chuck_io_thread = Thread.new(self) { |p|  p.read_thread }
-      @chuck_io_log = []
-    end
-    
-    def stop
-      return if @chuck_io.closed?
-      # stop quit! process
-      @chuck_io.close
-      @chuck_io_thread.join
+      @io_thread = Thread.new do
+        io = Open3.popen3 "#{ chuck_cmd '--loop' }"
+        @io = { :in => io[0], :out => io[1], :err => io[2], :thread => io[3] }
+      end
+      @read_thread = Thread.new do
+        @io[:out].sync = true ### you can do this once
+        loop do
+          puts buf = @io[:out].gets
+          # pipe.flush ### or this after each write
+        end
+      end
     end
     
     def status
       system chuck_cmd('--status')
-      unless @chuck_io_queue.empty?
-        puts str = @chuck_io_queue.pop
-      end
+      # read_out
+      # @io[:out].gets
     end
     
     def chuck_cmd(cmd)
       "#{CHUCK_BIN} -p#{@config[:port]} #{cmd}"
     end
-
-    def read_thread # only called by @chuck_io_thread
+        
+    def read_out # only called by @chuck_io_thread
       buff = ''
       begin
-        until @chuck_io.eof?
-          buff += @chuck_io.read 1
-          puts "read_thread: #{buff}"
+        until @io[:out].eof?
+          buff += @io[:out].read 1
           next unless (i = buff.index(/[\r\n]/))
-          puts "read_thread: LINE FINISHED"
-          @chuck_io_queue.push buff.slice!(0, i+1).strip
+          # @chuck_io_queue.push buff.slice!(0, i+1).strip
+          puts buff.slice!(0, i+1).strip
         end
       rescue
         return
