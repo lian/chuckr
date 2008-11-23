@@ -2111,14 +2111,14 @@ void Chuck_VM_Shreduler::status( )
     t_CKUINT h = m_status.t_hour;
     t_CKUINT m = m_status.t_minute;
     t_CKUINT sec = m_status.t_second;
-    fprintf( stdout, "[chuck](VM): status (now == %ldh%ldm%lds, %.1f samps) ...\n",
+    fprintf( stderr, "[chuck](VM): status (now == %ldh%ldm%lds, %.1f samps) ...\n",
              h, m, sec, m_status.now_system );
 
     // print status
     for( t_CKUINT i = 0; i < m_status.list.size(); i++ )
     {
         shred = m_status.list[i];
-        fprintf( stdout, 
+        fprintf( stderr, 
             "    [shred id]: %ld  [source]: %s  [spork time]: %.2fs ago%s\n",
             shred->xid, mini( shred->name.c_str() ),
             (m_status.now_system - shred->start) / m_status.srate,
