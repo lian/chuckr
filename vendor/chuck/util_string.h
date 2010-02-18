@@ -35,6 +35,7 @@
 
 #include "chuck_def.h"
 #include <string>
+#include <cstdio>
 #include <vector>
 
 
