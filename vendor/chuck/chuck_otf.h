@@ -80,6 +80,14 @@ t_CKUINT otf_process_msg( Chuck_VM * vm, Chuck_Compiler * compiler,
 
 // send command
 int otf_send_cmd( int argc, const char ** argv, t_CKINT & i, const char * host, int port, int * is_otf = NULL );
+
+extern "C" int exC_otf_send_cmd( int argc, const char ** argv, const char * host, int port)
+{
+  t_CKINT i = 0;
+  return otf_send_cmd(argc, argv, i, host, port, NULL);
+}
+
+
 // send file to remote host
 int otf_send_file( const char * filename, Net_Msg & msg, const char * op, ck_socket sock );
 // connect
