@@ -38,6 +38,8 @@ OBJS=   chuck.tab.o chuck.yy.o chuck_absyn.o chuck_parse.o chuck_errmsg.o \
 
 chuck: $(OBJS)
 	$(CXX) -o chuck $(OBJS) $(LIBS)
+	# cheap way to get a shared lib of chuck for FFI
+	$(CXX) -shared -Wl,-soname,libchuck.so -o libchuck.so $(OBJS) $(LIBS)
 
 chuck.tab.o: chuck.tab.c
 	$(CC) $(FLAGS) chuck.tab.c

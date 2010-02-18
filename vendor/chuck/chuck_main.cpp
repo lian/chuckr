@@ -410,7 +410,8 @@ int main( int argc, const char ** argv )
                     // error
                     fprintf( stderr, "[chuck]: invalid arguments for '--deprecate'...\n" );
                     fprintf( stderr, "[chuck]: ... (looking for :stop, :warn, or :ignore)\n" );
-                    exit( 1 );
+                    //exit( 1 );
+                    return 1;
                 }
             }
             else if( !strcmp( argv[i], "--probe" ) )
@@ -423,12 +424,14 @@ int main( int argc, const char ** argv )
                  || !strcmp(argv[i], "--about") )
             {
                 usage();
-                exit( 2 );
+                //exit( 2 );
+                return 2;
             }
             else if( !strcmp( argv[i], "--version" ) )
             {
                 version();
-                exit( 2 );
+                return 2;
+                //exit( 2 );
             }
             else
             {
@@ -440,15 +443,16 @@ int main( int argc, const char ** argv )
                 EM_setlog( log_level );
                 // do it
                 if( otf_send_cmd( argc, argv, i, g_host, g_port, &is_otf ) )
-                    exit( 0 );
+                    return 0; //exit( 0 );
                     
                 // is otf
-                if( is_otf ) exit( 1 );
+                if( is_otf ) return 1; //exit( 1 );
 
                 // done
                 fprintf( stderr, "[chuck]: invalid flag '%s'\n", argv[i] );
                 usage();
-                exit( 1 );
+                //exit( 1 );
+                return 1;
             }
         }
         else
@@ -490,7 +494,8 @@ int main( int argc, const char ** argv )
     if ( !files && vm_halt && !enable_shell )
     {
         fprintf( stderr, "[chuck]: no input files... (try --help)\n" );
-        exit( 1 );
+        //exit( 1 );
+        return 1;
     }
 
     // shell initialization without vm
